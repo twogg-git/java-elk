@@ -16,6 +16,7 @@ services:
     password:
       from_secret: DOCKER_PASSWORD
     repo: twogghub/java-elk
+    file: Dockerfile
     tags:
       - 1.0.1
   when:
