@@ -2,6 +2,11 @@ kind: pipeline
 name: Pipeline
 
 steps:
+  - name: dependencies
+    image: maven:alpine
+    commands:
+      - mvn --quiet --batch-mode dependency:tree
+
   - name: test
     image: maven:alpine
     commands:
