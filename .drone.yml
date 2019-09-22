@@ -6,16 +6,22 @@ steps:
     image: maven:alpine
     commands:
       - mvn dependency:tree
+    cache:
+      - .m2/repository
 
   - name: test
     image: maven:alpine
     commands:
       - mvn test
+    cache:
+      - .m2/repository
 
   - name: build
     image: maven:alpine
     commands:
     - mvn clean package
+    cache:
+      - .m2/repository
 
   - name: deploy
     image: plugins/docker
