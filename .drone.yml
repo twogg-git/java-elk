@@ -6,12 +6,6 @@ steps:
   image: maven:3-alpine
   commands:
   - mvn package
-
-- name: deploy
-  image: maven:3-alpine
-  commands:
-  - cd target
-  - ls  
       
 services:
 - name: publish
