@@ -25,7 +25,7 @@ docker run --rm -p 8080:8080 --name sbrest sbrest
 
 ## Maven-Docker pluging () 
 
-- Use your DockerHub account (https://hub.docker.com)
+*From this point you need a DockerHub account* (https://hub.docker.com)
 
 mvn package dockerfile:build
 

@@ -6,15 +6,30 @@ import java.util.List;
 
 import com.test.springboot.model.User;
 import org.springframework.web.client.RestTemplate;
- 
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+ 
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment=WebEnvironment.DEFINED_PORT)
 public class SpringBootRestTestClient {
  
-    public static final String REST_SERVICE_URI = "http://localhost:8080/sbrest/api";
+    public final String REST_SERVICE_URI = "http://localhost:8080/api";
      
     /* GET */
+    @Test
     @SuppressWarnings("unchecked")
-    private static void listAllUsers(){
+    public void listAllUsers(){
         System.out.println("Testing listAllUsers API-----------");
          
         RestTemplate restTemplate = new RestTemplate();
@@ -29,16 +44,9 @@ public class SpringBootRestTestClient {
         }
     }
      
-    /* GET */
-    private static void getUser(){
-        System.out.println("Testing getUser API----------");
-        RestTemplate restTemplate = new RestTemplate();
-        User user = restTemplate.getForObject(REST_SERVICE_URI+"/user/1", User.class);
-        System.out.println(user);
-    }
      
     /* POST */
-    private static void createUser() {
+    public void createUser() {
         System.out.println("Testing create User API----------");
         RestTemplate restTemplate = new RestTemplate();
         User user = new User(0,"Sarah",51,134);
@@ -47,7 +55,8 @@ public class SpringBootRestTestClient {
     }
  
     /* PUT */
-    private static void updateUser() {
+    @Test
+    public void updateUser() {
         System.out.println("Testing update User API----------");
         RestTemplate restTemplate = new RestTemplate();
         User user  = new User(1,"Tomy",33, 70000);
@@ -55,8 +64,18 @@ public class SpringBootRestTestClient {
         System.out.println(user);
     }
  
+ /* GET */
+    @Test
+    public void getUser(){
+        System.out.println("Testing getUser API----------");
+        RestTemplate restTemplate = new RestTemplate();
+        User user = restTemplate.getForObject(REST_SERVICE_URI+"/user/1", User.class);
+        System.out.println(user);
+    }
+
     /* DELETE */
-    private static void deleteUser() {
+    @Test
+    public void deleteUser() {
         System.out.println("Testing delete User API----------");
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.delete(REST_SERVICE_URI+"/user/3");
@@ -64,22 +83,11 @@ public class SpringBootRestTestClient {
  
  
     /* DELETE */
-    private static void deleteAllUsers() {
+    //@Test
+    public void deleteAllUsers() {
         System.out.println("Testing all delete Users API----------");
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.delete(REST_SERVICE_URI+"/user/");
     }
  
-    public static void main(String args[]){
-        listAllUsers();
-        getUser();
-        createUser();
-        listAllUsers();
-        updateUser();
-        listAllUsers();
-        deleteUser();
-        listAllUsers();
-        deleteAllUsers();
-        listAllUsers();
-    }
 }
