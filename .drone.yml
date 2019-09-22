@@ -1,0 +1,5 @@
+pipeline:
+  build:
+    image: maven:3-alpine
+    commands:
+      - mvn package dockerfile:build
