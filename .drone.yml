@@ -9,7 +9,8 @@ steps:
   - cd target
   - ls
 
-- name: package
+- name: deploy
+  image: maven:3-alpine
   commands:
   - cd target
   - ls  
