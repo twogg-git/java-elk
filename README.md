@@ -1,2 +1,2 @@
-# go-elk
-Simple Go endpoints monitored by ELK.
+# java-elk
+Simple java endpoints monitored by ELK.
