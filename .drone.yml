@@ -15,7 +15,7 @@ services:
       from_secret: DOCKER_USERNAME
     password:
       from_secret: DOCKER_PASSWORD
-    repo: twogghub/go-droneci
+    repo: twogghub/java-elk
     tags:
       - 1.0.2
       - latest
