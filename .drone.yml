@@ -6,22 +6,25 @@ steps:
     image: maven:alpine
     commands:
       - mvn dependency:tree
-    cache:
-      - .m2/repository
+    volumes:
+    - name: cache
+      path: /root/.m2
 
   - name: test
     image: maven:alpine
     commands:
       - mvn test
-    cache:
-      - .m2/repository
+    volumes:
+    - name: cache
+      path: /root/.m2
 
   - name: build
     image: maven:alpine
     commands:
     - mvn clean package
-    cache:
-      - .m2/repository
+    volumes:
+    - name: cache
+      path: /root/.m2
 
   - name: deploy
     image: plugins/docker
@@ -37,4 +40,8 @@ steps:
     when:
       branch:
       - master
-   
+
+volumes:
+- name: cache
+  host:
+    path: /home/cache/.m2
