@@ -11,7 +11,7 @@ steps:
   - name: build
     image: maven:alpine
     commands:
-    - mvn clean install
+    - mvn clean package
 
   - name: deploy
     image: plugins/docker
