@@ -6,8 +6,9 @@ steps:
   image: maven:3-alpine
   commands:
   - mvn package
-  - cd target
-  - ls
+  volumes:
+  - name: cache
+    path: /root/.m2
 
 - name: deploy
   image: maven:3-alpine
@@ -30,4 +31,8 @@ services:
   when:
     branch:
     - master
-      
+
+volumes:
+- name: cache
+  host:
+    path: /home/cache/.m2      
