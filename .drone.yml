@@ -1,13 +1,13 @@
 kind: pipeline
 name: Pipeline
 
-pipeline:
-  test:
+steps:
+  - name: test
     image: maven:alpine
     commands:
       - mvn --quiet --batch-mode test
 
-  build_jar:
+  - name: build_jar
     image: maven:alpine
     commands:
     - mvn --batch-mode clean package
