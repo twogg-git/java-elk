@@ -2,4 +2,18 @@ pipeline:
   build:
     image: maven:3-alpine
     commands:
-      - mvn package dockerfile:build
+      - mvn package 
+  publish:
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: twogghub/java-elk
+      tags:
+        - 1.0.1
+        - latest
+    when:
+      branch:
+      - master
