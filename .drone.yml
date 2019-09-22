@@ -5,17 +5,17 @@ steps:
   - name: dependencies
     image: maven:alpine
     commands:
-      - mvn --quiet --batch-mode dependency:tree
+      - mvn dependency:tree
 
   - name: test
     image: maven:alpine
     commands:
-      - mvn --quiet --batch-mode test
+      - mvn test
 
-  - name: build_jar
+  - name: build
     image: maven:alpine
     commands:
-    - mvn --batch-mode clean package
+    - mvn clean package
 
   - name: deploy
     image: plugins/docker
@@ -27,7 +27,7 @@ steps:
       repo: twogghub/java-elk
       file: Dockerfile
       tags:
-        - 1.0.1
+        - latest
     when:
       branch:
       - master
