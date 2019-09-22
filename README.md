@@ -1,5 +1,7 @@
 # Java + ELK
 
+[![Build Status](https://cloud.drone.io/api/badges/twogg-git/java-elk/status.svg)](https://cloud.drone.io/twogg-git/java-elk)
+
 ## Compile java code
 mvn dependency:tree
 
