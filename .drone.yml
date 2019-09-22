@@ -6,6 +6,7 @@ steps:
   image: maven:3-alpine
   commands:
   - mvn package
+  - ls 
       
 services:
 - name: publish
