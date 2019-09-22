@@ -2,29 +2,16 @@ kind: pipeline
 name: Pipeline
 
 steps:
-  - name: dependencies
-    image: maven:alpine
-    commands:
-      - mvn dependency:tree
-    volumes:
-    - name: cache
-      path: /root/.m2
 
   - name: test
     image: maven:alpine
     commands:
       - mvn test
-    volumes:
-    - name: cache
-      path: /root/.m2
 
   - name: build
     image: maven:alpine
     commands:
-    - mvn clean package
-    volumes:
-    - name: cache
-      path: /root/.m2
+    - mvn clean install
 
   - name: deploy
     image: plugins/docker
@@ -34,14 +21,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       repo: twogghub/java-elk
-      file: Dockerfile
       tags:
         - latest
     when:
       branch:
       - master
-
-volumes:
-- name: cache
-  host:
-    path: /home/cache/.m2
