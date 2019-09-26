@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+
+  elasticsearch:
+    container_name: elasticsearch
+    restart: always
+    image: elasticsearch:5.6-alpine
+    container_name: elastic
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      cluster.name: "elastic-node"
+      network.host: "0.0.0.0"
+    hostname: elasticsearch
+
+  kibana:
+    container_name: kibana
+    restart: always
+    image: kibana:5.6
+    ports:
+      - "5601:5601"
+    environment:
+      elasticsearch.url: "elasticsearch:9200"
+    hostname: kibana
+    depends_on:
+      - elasticsearch
+
+  heartbeat:
+    build:
+      context: elk_heartbeat
+    container_name: heartbeat
+    restart: always
+    hostname: heartbeat
+    depends_on:
+      - elasticsearch
+  
+  sbrest:
+    build:
+      context: spring_app
+    container_name: sbrest
+    restart: always
+    hostname: sbrest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - elasticsearch    
+
+
+volumes:
+  elasticsearch:
