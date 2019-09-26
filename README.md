@@ -4,7 +4,9 @@
 
 ## Endpoints 
 
-http://localhost:8080/sbrest/api/user/
+- http://localhost:8080/health   
+- http://localhost:8080/version 
+- http://localhost:8080/api/user/ 
 
 ## Run locally: SpringBoot App
 
