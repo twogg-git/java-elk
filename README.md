@@ -1,30 +1,37 @@
-# Java + ELK 
+# Playing with Java + ELK Stack 
+<img height="150" width="350" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_stack.png">
 
 [![Build Status](https://cloud.drone.io/api/badges/twogg-git/java-elk/status.svg)](https://cloud.drone.io/twogg-git/java-elk)
+
+This repo aims to practice with ELK Stack thanks to a simple SpringBoot application. 
+Following this repo, you are going to:  
+- Monitor a SpringBoot application log and API beats with the ELK Stack.​
+- Practice with Kibana Dashboards and indexing tools. ​
+- Follow each ELK setup and understand connections and events setup.​
 
 ## Running the services...
 ```sh
 docker-compose up -d --build
-````
+```
 
 ## Kibana initial setup and basic use. 
 1. Go to http://localhost:5601/
-<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_1create_index.png">
+<img height="300" width="550" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_1create_index.png">
 
 2. Configure all matching index pattern: *
-<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_2index_match.png">
+<img height="300" width="480" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_2index_match.png">
 
 3. Set Time Filter field name: @timestamp  
-<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_3timestamp.png">
+<img height="300" width="480" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_3timestamp.png">
 
 4. Save and click *Discover* to visualize the current logs saved in ElasticSearch database.   
-<img height="300" width="600" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_4discover.png">
+<img height="350" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_4discover.png">
 
 5. Add some useful fields like *tags* to order the results.  
-<img height="150" width="50" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_5tags.png">
+<img height="300" width="100" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_5tags.png">
 
 6. Now enjoy logging with the ELK Stack.
-<img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_6tags_selected">
+<img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_6tags_selected.png">
 
 ## Docker-Compose services
 
@@ -89,7 +96,7 @@ logging:
 ```
 
 ## Filebeat Setup  
-Calling logs from Java setup, then send it to logstash and enabling elasticsearch monitoring tagging. 
+Logs from Java will be send to logstash the to elasticsearch indexing.     
 [/elk-filebeat/filebeat.yml)](https://github.com/twogg-git/java-elk/blob/master/elk-filebeat/filebeat.yml)
 ```sh
 filebeat.inputs:
@@ -108,7 +115,7 @@ xpack.monitoring.elasticsearch.hosts: ["host.docker.internal:9200"]
 ```
 
 ## Heartbeat Setup  
-Setting up services and endpoints to monitor HTTP status.
+Setting up services and endpoints to monitor HTTP status.   
 [/elk-heartbeat/heartbeat.yml)](https://github.com/twogg-git/java-elk/blob/master/elk-heartbeat/heartbeat.yml)
 ```sh
 heartbeat.monitors:
@@ -138,7 +145,7 @@ setup.kibana:
 ```
 
 ## Logstash Setup  
-Input will come from filebeat. Those events will filtered by the tag "json" then send to elasticsearch. 
+The input will come filebeat, then the events will filtered and send to elasticsearch.     
 [/elk-logstash/logstash.conf)](https://github.com/twogg-git/java-elk/blob/master/elk-logstash/logstash.conf)
 ```sh
 input {
@@ -167,7 +174,6 @@ output {
 ```
 
 ## Run locally ONLY the SpringBoot Rest App
-
 Go to the folder **/java-sbrest** then run the following Docker commands.
 ```sh
 docker build -t sbrest_only .
@@ -187,6 +193,3 @@ If you are going to make changes into the source code and test those into the EL
     # If the compose environment is running.
     docker-compose up --detach --build sbrest
 ```
-
-
-
