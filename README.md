@@ -10,18 +10,16 @@ docker-compose up --build
 
 ### Interactive
 - spring: http://localhost:8081/api/user/   
-<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
+<img height="500" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
 
 - kibana: http://localhost:5601   
-<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
+<img height="500" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
 
 ### Background (No WebUI access)
 - elastic search 
 - logstah
 - filebeat
 - heartbeat
-
-
 
 ## Java SpringBoot Code Highlights  
 
@@ -32,7 +30,7 @@ docker-compose up --build
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
-
+    ...
 	<dependencies>
         ...
 		<dependency>
@@ -44,9 +42,6 @@ docker-compose up --build
 	</dependencies>
 ...
 ```
-
-
-
 
 
 ## Run locally: SpringBoot App
