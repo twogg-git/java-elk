@@ -1,5 +1,5 @@
 # Playing with Java + ELK Stack 
-<img height="200" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_stack.png">
+<img height="200" width="600" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_stack.png">
 
 [![Build Status](https://cloud.drone.io/api/badges/twogg-git/java-elk/status.svg)](https://cloud.drone.io/twogg-git/java-elk)
 
@@ -30,7 +30,7 @@ docker-compose up -d --build
 <img height="350" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_4discover.png">
 
 5. Add some useful fields like *tags* to order the results.  
-<img height="300" width="250" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_5tags.png">
+<img height="350" width="250" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_5tags.png">
 
 6. Now enjoy logging with the ELK Stack.
 <img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_6tags_selected.png">
