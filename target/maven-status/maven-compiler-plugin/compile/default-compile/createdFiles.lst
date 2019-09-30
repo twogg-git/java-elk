@@ -1,7 +1,0 @@
-com/test/springboot/service/UserServiceImpl.class
-com/test/springboot/util/CustomErrorType.class
-com/test/springboot/controller/RestContextController.class
-com/test/springboot/SpringBootRestApiApp.class
-com/test/springboot/controller/RestApiController.class
-com/test/springboot/service/UserService.class
-com/test/springboot/model/User.class
