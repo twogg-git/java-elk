@@ -26,4 +26,4 @@ steps:
         - 0.1
     when:
       branch:
-      - NA
+      - master
