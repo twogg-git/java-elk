@@ -12,18 +12,3 @@ steps:
     image: maven:alpine
     commands:
     - mvn clean package
-
-  - name: deploy
-    image: plugins/docker
-    settings:
-      username:
-        from_secret: DOCKER_USERNAME
-      password:
-        from_secret: DOCKER_PASSWORD
-      repo: twogghub/java-elk
-      dockerfile: java-sbrest/Dockerfile
-      tags:
-        - 0.1
-    when:
-      branch:
-      - master

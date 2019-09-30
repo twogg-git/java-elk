@@ -3,30 +3,49 @@
 [![Build Status](https://cloud.drone.io/api/badges/twogg-git/java-elk/status.svg)](https://cloud.drone.io/twogg-git/java-elk)
 
 ## Running the services...
-
 ```sh
-docker-compose up --build
+docker-compose up -d --build
 ````
 
-### Interactive
+## Kibana initial setup and basic use. 
+1. Go to http://localhost:5601/
+<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_1create_index.png">
+
+2. Configure all matching index pattern: *
+<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_2index_match.png">
+
+3. Set Time Filter field name: @timestamp  
+<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_3timestamp.png">
+
+4. Save and click *Discover* to visualize the current logs saved in ElasticSearch database.   
+<img height="300" width="600" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_4discover.png">
+
+5. Add some useful fields like *tags* to order the results.  
+<img height="150" width="50" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_5tags.png">
+
+6. Now enjoy logging with the ELK Stack.
+<img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_6tags_selected">
+
+## Docker-Compose services
+
+#### Interactive
 - spring: http://localhost:8081/api/user/   
 <img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
 
 - kibana: http://localhost:5601   
 <img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
 
-### Background (No WebUI access)
+#### Background (No WebUI access)
 - elastic search 
 - logstah
 - filebeat
 - heartbeat
 
-## Java SpringBoot Code Highlights  
-
-### Loggin setup
+## Java SpringBoot Loggin   
+Logback configuration to send spring log file to elasticsearch through logstash.   
 [/pom.xml](https://github.com/twogg-git/java-elk/blob/master/pom.xml)
 ```sh
-...
+    ...
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -42,64 +61,132 @@ docker-compose up --build
 	</dependencies>
 ...
 ```
-
-
-## Run locally: SpringBoot App
-
+[/src/main/resources/logback-spring.xml](https://github.com/twogg-git/java-elk/blob/master/src/main/resources/logback-spring.xml)
 ```sh
+<configuration>
+    ...
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+        <springProfile name="json">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"appName":"${appName}"}</customFields>
+            </encoder>
+        </springProfile>
+    </appender>
+    ...
+</configuration>
+```
+[/src/main/resources/application.yml)](https://github.com/twogg-git/java-elk/blob/master/src/main/resources/application.yml)
+```sh
+server:
+  port: 8080
+  contextPath: /sbrest
 
-docker build -t sbrest .
-
-docker run --name sbrest --rm -v $PWD/logs:/logs -p 8081:8080 sbrest
+logging:
+  file: logs/application.log
 ```
 
-## Run locally: Elastic Stack 
-
+## Filebeat Setup  
+Calling logs from Java setup, then send it to logstash and enabling elasticsearch monitoring tagging. 
+[/elk-filebeat/filebeat.yml)](https://github.com/twogg-git/java-elk/blob/master/elk-filebeat/filebeat.yml)
 ```sh
-docker-compose up --build
+filebeat.inputs:
+  - type: docker
+    ...
+    fields:
+        app_id: service-spring
+        tags: ['json', 'sbrest', 'application.log']
+    ...
+output:
+  logstash.hosts: ["host.docker.internal:5044"]
+...
+# X-pack optional module
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: ["host.docker.internal:9200"]
 ```
 
-## ELK Stack 
-
-http://localhost:5601/
-
-#### Configure an index pattern
-- Index pattern: heartbeat-*    
-- Time Filter field name: @timestamp  
-- Click *create*
-
-## Compile java code
-
+## Heartbeat Setup  
+Setting up services and endpoints to monitor HTTP status.
+[/elk-heartbeat/heartbeat.yml)](https://github.com/twogg-git/java-elk/blob/master/elk-heartbeat/heartbeat.yml)
 ```sh
-mvn dependency:tree
-
-mvn -Dtest=SpringBootRestTestClient test
-
-mvn package
+heartbeat.monitors:
+# ELK monitors
+...
+- type: http
+  schedule: '*/3 * * * * *'
+  urls: ["http://elasticsearch:9200"]   
+  name: "monitor_elasticsearch"
+  tags: ["elk", "elasticsearch_index", "status"]
+...
+# APP monitors
+- type: http
+  schedule: '*/1 * * * * *'
+  urls: ["http://sbrest:8080/health"]
+  check.response.status: 200
+  name: "monitor_app_health"
+  tags: ["app_info", "health", "status"]
+...
+# STACK setup
+heartbeat.scheduler:
+  limit: 1
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+setup.kibana:
+  host: "kibana:5601"
 ```
 
-## Run App locally
-
+## Logstash Setup  
+Input will come from filebeat. Those events will filtered by the tag "json" then send to elasticsearch. 
+[/elk-logstash/logstash.conf)](https://github.com/twogg-git/java-elk/blob/master/elk-logstash/logstash.conf)
 ```sh
-java -jar target/sbrest-0.1.jar
+input {
+    beats {
+        ssl => false
+        port => 5044
+    }
+}
 
-mvn spring-boot:run
+filter {
+   if [tags][json] {
+      json {
+        source => "message"
+      }
+    }
+ }
+
+output {
+    elasticsearch {
+         hosts => ["host.docker.internal:9200"]
+         manage_template => false
+         index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+         document_type => "%{[@metadata][type]}"
+   }
+}
 ```
 
-## Maven-Docker pluging  
+## Run locally ONLY the SpringBoot Rest App
 
-*From this point you need a DockerHub account* (https://hub.docker.com)
-
+Go to the folder **/java-sbrest** then run the following Docker commands.
 ```sh
-mvn package dockerfile:build
-
-docker login
-
-docker push twogghub/java-elk:1.0.0
+docker build -t sbrest_only .
+docker run --name sbrest_only --rm -v $PWD/logs:/logs -p 8082:8080 sbrest_only
 ```
 
-https://hub.docker.com/r/twogghub/java-elk
+#### Updating the source code
+If you are going to make changes into the source code and test those into the ELK enviroment. Remember to build the **sbrest-0.1.jar.jar** file, then copy it from /target into the /java-sbrest folder, or the changes wont be updated into the compose deployment.
+```sh
+    mvn dependency:tree
+    mvn -Dtest=SpringBootRestTestClient test
+    mvn package
+    mvn spring-boot:run
 
+    cp target/sbrest-0.1.jar java-sbrest/sbrest-0.1.jar
+     
+    # If the compose environment is running.
+    docker-compose up --detach --build sbrest
+```
 
 
 
