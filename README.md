@@ -9,6 +9,8 @@ Following this repo, you are going to:
 - Practice with Kibana Dashboards and indexing tools. ​
 - Follow each ELK setup and understand connections and events setup.​
 
+Click here to get more info on [ELK Monitoring](https://github.com/twogg-git/talks/blob/master/ELK_Monitoring_Endava.pdf).
+
 ## Running the services...
 ```sh
 docker-compose up -d --build
