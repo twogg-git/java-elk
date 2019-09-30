@@ -2,44 +2,46 @@ heartbeat.monitors:
 
 # ELK monitors
 - type: http
-  schedule: '*/15 * * * * * *'
+  schedule: '*/3 * * * * *'
   urls: ["http://kibana:5601"]
-  name: "check_kibana_index"
-  tags: ["elk_index", "kibana", "status"]
+  name: "monitor_kibana"
+  tags: ["elk", "kibana_index", "status"]
 - type: http
-  schedule: '*/15 * * * * * *'
+  schedule: '*/3 * * * * *'
   urls: ["http://elasticsearch:9200"]   
-  name: "check_elasticsearch_index"
-  tags: ["elk_index", "elasticsearch", "status"]
+  name: "monitor_elasticsearch"
+  tags: ["elk", "elasticsearch_index", "status"]
 
 # APP monitors
 - type: http
-  schedule: '*/15 * * * * * *'
+  schedule: '*/1 * * * * *'
   urls: ["http://sbrest:8080/health"]
   check.response.status: 200
-  name: "check_app_index"
-  tags: ["app_index", "health", "app"]
-- type: http
-  schedule: '*/15 * * * * * *'
-  urls: ["http://sbrest:8080/version"]
-  check.response.status: 103
-  name: "check_version_index"
-  tags: ["app_index", "version", "app"]
+  name: "monitor_app_health"
+  tags: ["app_info", "health", "status"]
 
 # USER monitors
 - type: http
-  schedule: '*/15 * * * * * *'
+  schedule: '*/1 * * * * *'
   urls: ["http://sbrest:8080/api/user/"]
   check.response.status: 200
-  name: "check_users_service_dev"
-  tags: ["users_service", "list_user", "users"] 
-- type: http
-  schedule: '*/15 * * * * * *'
-  urls: ["http://sbrest:8080/api/user/-1"]
-  check.response.status: 200
-  name: "check_users_service_test"
-  tags: ["users_service", "test_user", "users"]     
+  name: "monitor_users_service_list_users"
+  tags: ["app_service", "list_users", "users_service"]    
+#- type: http
+#  schedule: '*/1 * * * * *'
+#  urls: ["http://sbrest:8080/api/user/"]
+#  check.request:
+#    method: POST
+#    headers:
+#      content-type : 'application/json'
+#    body:
+#      '{"name": "heartbeat", "age": "0", "salary": "0"}'
+#  check.response:
+#    status: 201
+#  name: "monitor_users_service_post"
+#  tags: ["app_service", "create_user", "users_service"]
 
+# STACK setup
 heartbeat.scheduler:
   limit: 1
 output.elasticsearch:

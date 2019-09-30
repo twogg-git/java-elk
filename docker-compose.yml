@@ -3,55 +3,94 @@ version: '3.7'
 services:
 
   elasticsearch:
+    hostname: elasticsearch
     container_name: elasticsearch
     restart: always
-    image: elasticsearch:5.6-alpine
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
     container_name: elastic
     environment:
       - discovery.type=single-node
     ports:
       - "9200:9200"
-      - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536  
     volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
+      - elasticsearch_data:/usr/share/elasticsearch/data
     environment:
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       cluster.name: "elastic-node"
       network.host: "0.0.0.0"
-    hostname: elasticsearch
 
   kibana:
+    hostname: kibana
     container_name: kibana
     restart: always
-    image: kibana:5.6
+    #image: kibana:5.6
+    image: docker.elastic.co/kibana/kibana:6.5.4
     ports:
       - "5601:5601"
     environment:
       elasticsearch.url: "elasticsearch:9200"
-    hostname: kibana
-    depends_on:
-      - elasticsearch
-
-  heartbeat:
-    build:
-      context: elk_heartbeat
-    container_name: heartbeat
-    restart: always
-    hostname: heartbeat
     depends_on:
       - elasticsearch
   
-  sbrest:
-    build:
-      context: spring_app
-    container_name: sbrest
-    restart: always
-    hostname: sbrest
+  logstash:
+    hostname: logstash
+    container_name: logstash
+    image: docker.elastic.co/logstash/logstash:6.5.4
     ports:
-      - "8080:8080"
+      - "5044:5044"
+    volumes:
+      - $PWD/elk-logstash/logstash.conf:/conf/logstash.conf
+    command: logstash -f /conf/logstash.conf
+    depends_on:
+      -  elasticsearch
+
+  heartbeat:
+    hostname: heartbeat
+    container_name: heartbeat
+    build:
+      context: elk_heartbeat
+    restart: always
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    hostname: filebeat
+    container_name: filebeat
+    build:
+      context: elk-filebeat
+    volumes:
+      # needed to access all docker logs 
+      - "/var/lib/docker/containers:/var/lib/docker/containers"
+      # needed to access additional information about containers
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always
+    depends_on:
+      - elasticsearch
+  
+
+  sbrest:
+    hostname: sbrest
+    container_name: sbrest
+    build:
+      context: java-sbrest
+    restart: always
+    labels:
+      filebeat_enable:
+    volumes:
+      - $PWD/java-sbrest/logs:/logs
+    ports:
+      - "8081:8080"
     depends_on:
       - elasticsearch    
 
 
 volumes:
-  elasticsearch:
+  elasticsearch_data:
+  filebeat_data:

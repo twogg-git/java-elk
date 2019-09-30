@@ -1,19 +1,61 @@
-# Java + ELK
+# Java + ELK 
 
 [![Build Status](https://cloud.drone.io/api/badges/twogg-git/java-elk/status.svg)](https://cloud.drone.io/twogg-git/java-elk)
 
-## Endpoints 
+## Running the services...
 
-- http://localhost:8080/health   
-- http://localhost:8080/version 
-- http://localhost:8080/api/user/ 
+```sh
+docker-compose up --build
+````
+
+### Interactive
+- spring: http://localhost:8081/api/user/   
+<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
+
+- kibana: http://localhost:5601   
+<img height="300" width="500" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
+
+### Background (No WebUI access)
+- elastic search 
+- logstah
+- filebeat
+- heartbeat
+
+
+
+## Java SpringBoot Code Highlights  
+
+### Loggin setup
+[/pom.xml](https://github.com/twogg-git/java-elk/blob/master/pom.xml)
+```sh
+...
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+        ...
+		<dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>5.2</version>
+            <scope>runtime</scope>
+        </dependency>
+	</dependencies>
+...
+```
+
+
+
+
 
 ## Run locally: SpringBoot App
 
 ```sh
+
 docker build -t sbrest .
 
-docker run --rm -p 8080:8080 --name sbrest sbrest
+docker run --name sbrest --rm -v $PWD/logs:/logs -p 8081:8080 sbrest
 ```
 
 ## Run locally: Elastic Stack 
@@ -44,7 +86,7 @@ mvn package
 ## Run App locally
 
 ```sh
-java -jar target/sbrest-1.0.0.jar
+java -jar target/sbrest-0.1.jar
 
 mvn spring-boot:run
 ```
@@ -64,12 +106,5 @@ docker push twogghub/java-elk:1.0.0
 https://hub.docker.com/r/twogghub/java-elk
 
 
-## DroneCI
 
-https://cloud.drone.io/twogg-git/java-elk
 
-## Clean-Up 
-
-```sh
-docker-compose down --volumes
-```

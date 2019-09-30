@@ -14,7 +14,14 @@ public class RestContextController {
 
 	public static final Logger logger = LoggerFactory.getLogger(RestContextController.class);
 
-	// ------------------- health---------------------------------------------
+	// ------------------- index ---------------------------------------------
+
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public ResponseEntity<String> getIndex() {
+        return new ResponseEntity<String>("SpringBoot App to manage data by REST endpoints.", HttpStatus.OK);
+    }
+    
+    // ------------------- health ---------------------------------------------
 
 	@RequestMapping(value = "health", method = RequestMethod.GET)
 	public ResponseEntity<String> getHealthStatus() {
@@ -25,7 +32,7 @@ public class RestContextController {
 
 	@RequestMapping(value = "version", method = RequestMethod.GET)
 	public ResponseEntity<String> getCurrentVersion() {
-        return new ResponseEntity<String>("Current version: 1.0.0", HttpStatus.CHECKPOINT);
+        return new ResponseEntity<String>("Current version: 0.1", HttpStatus.CHECKPOINT);
     }
 
 }
