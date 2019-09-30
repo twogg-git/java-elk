@@ -10,10 +10,10 @@ docker-compose up --build
 
 ### Interactive
 - spring: http://localhost:8081/api/user/   
-<img height="500" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
+<img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_sbrest.png">
 
 - kibana: http://localhost:5601   
-<img height="500" width="700" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
+<img height="400" width="800" src="https://raw.githubusercontent.com/twogg-git/talks/master/resources/elk_repo/elk_kibana.png">
 
 ### Background (No WebUI access)
 - elastic search 
