@@ -2,19 +2,19 @@ heartbeat.monitors:
 
 # ELK monitors
 - type: http
-  schedule: '*/3 * * * * *'
+  schedule: '*/3 * * * *'
   urls: ["http://kibana:5601"]
   name: "monitor_kibana"
   tags: ["elk", "kibana_index", "status"]
 - type: http
-  schedule: '*/3 * * * * *'
+  schedule: '*/3 * * * *'
   urls: ["http://elasticsearch:9200"]   
   name: "monitor_elasticsearch"
   tags: ["elk", "elasticsearch_index", "status"]
 
 # APP monitors
 - type: http
-  schedule: '*/1 * * * * *'
+  schedule: '*/3 * * * *'
   urls: ["http://sbrest:8080/health"]
   check.response.status: 200
   name: "monitor_app_health"
@@ -22,7 +22,7 @@ heartbeat.monitors:
 
 # USER monitors
 - type: http
-  schedule: '*/1 * * * * *'
+  schedule: '*/1 * * * * '
   urls: ["http://sbrest:8080/api/user/"]
   check.response.status: 200
   name: "monitor_users_service_list_users"

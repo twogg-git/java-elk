@@ -2,6 +2,8 @@ package com.test.springboot.controller;
 
 import java.util.List;
 
+import javax.management.JMException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,9 +117,30 @@ public class RestApiController {
 	@RequestMapping(value = "/user/", method = RequestMethod.DELETE)
 	public ResponseEntity<User> deleteAllUsers() {
 		logger.info("Deleting All Users");
-
 		userService.deleteAllUsers();
 		return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
 	}
+
+	// ------------------- Tests endpoint -----------------------------
+
+	@RequestMapping(value = "/info", method = RequestMethod.GET)
+	public ResponseEntity<String> getDummyMessage() {
+		logger.info("This is a dummy endpoint", "INFO");
+        return new ResponseEntity<String>("Dummy info endpoint ( ⚆ _ ⚆ )", HttpStatus.NOT_FOUND);
+	}
+
+	@RequestMapping(value = "/debug", method = RequestMethod.GET)
+	public ResponseEntity<String> getDummyDebugMessage() {
+		logger.debug("This message wont be outputed.", "DEBUG");
+        return new ResponseEntity<String>("Test endpoint, Debug enpoint.", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/exception", method = RequestMethod.GET)
+	public ResponseEntity<String> getDummyException() {
+		JMException exception = new JMException("Not a bug, its a feature!");
+		logger.error("ERROR", exception);
+		return new ResponseEntity<String>(exception.getMessage(), HttpStatus.NOT_IMPLEMENTED);
+	}
+
 
 }

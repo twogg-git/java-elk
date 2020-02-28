@@ -70,23 +70,7 @@ Logback configuration to send spring log file to elasticsearch through logstash.
 	</dependencies>
 ...
 ```
-[/src/main/resources/logback-spring.xml](https://github.com/twogg-git/java-elk/blob/master/src/main/resources/logback-spring.xml)
-```sh
-<configuration>
-    ...
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-        </encoder>
-        <springProfile name="json">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>{"appName":"${appName}"}</customFields>
-            </encoder>
-        </springProfile>
-    </appender>
-    ...
-</configuration>
-```
+
 [/src/main/resources/application.yml)](https://github.com/twogg-git/java-elk/blob/master/src/main/resources/application.yml)
 ```sh
 server:
@@ -102,14 +86,13 @@ Logs from Java will be send to logstash the to elasticsearch indexing.
 [/elk-filebeat/filebeat.yml)](https://github.com/twogg-git/java-elk/blob/master/elk-filebeat/filebeat.yml)
 ```sh
 filebeat.inputs:
-  - type: docker
+   - type: log
+    paths:
+      - /logs/application.log  
+    tags: ["filebeat", "log_file"]    
     ...
-    fields:
-        app_id: service-spring
-        tags: ['json', 'sbrest', 'application.log']
-    ...
-output:
-  logstash.hosts: ["host.docker.internal:5044"]
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
 ...
 # X-pack optional module
 xpack.monitoring.enabled: true
@@ -151,26 +134,20 @@ The input will come filebeat, then the events will filtered and send to elastics
 [/elk-logstash/logstash.conf)](https://github.com/twogg-git/java-elk/blob/master/elk-logstash/logstash.conf)
 ```sh
 input {
-    beats {
-        ssl => false
-        port => 5044
+
+    file {
+        path => "/logs/application.log"
+        tags => ['sbrest', 'application.log']
+        type => "logback"
     }
 }
 
-filter {
-   if [tags][json] {
-      json {
-        source => "message"
-      }
-    }
- }
-
 output {
     elasticsearch {
-         hosts => ["host.docker.internal:9200"]
-         manage_template => false
-         index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
-         document_type => "%{[@metadata][type]}"
+        hosts => ["elasticsearch:9200"]
+        manage_template => false
+        index => "logback-%{+YYYY.MM.dd}"
+        document_type => "application.log"
    }
 }
 ```
@@ -194,4 +171,18 @@ If you are going to make changes into the source code and test those into the EL
      
     # If the compose environment is running.
     docker-compose up --detach --build sbrest
+```
+
+#### Testing logs outputs
+To try endpoints outputs in the logstash and filebeat monitoring apps, run any of this curl requests.
+```sh
+curl http://localhost:8081/api/user/  
+curl http://localhost:8081/api/user/2  
+curl http://localhost:8081/api/user/a  
+curl http://localhost:8081/api/user/99  
+curl http://localhost:8081/api/dummy 
+curl http://localhost:8081/api/debug 
+
+# This example will output a full java exception
+curl http://localhost:8081/api/exception 
 ```

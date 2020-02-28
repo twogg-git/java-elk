@@ -7,7 +7,6 @@ services:
     container_name: elasticsearch
     restart: always
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-    container_name: elastic
     environment:
       - discovery.type=single-node
     ports:
@@ -30,7 +29,6 @@ services:
     hostname: kibana
     container_name: kibana
     restart: always
-    #image: kibana:5.6
     image: docker.elastic.co/kibana/kibana:6.5.4
     ports:
       - "5601:5601"
@@ -46,6 +44,7 @@ services:
     ports:
       - "5044:5044"
     volumes:
+      - sbrest_data:/logs
       - $PWD/elk-logstash/logstash.conf:/conf/logstash.conf
     command: logstash -f /conf/logstash.conf
     depends_on:
@@ -66,14 +65,14 @@ services:
     build:
       context: elk-filebeat
     volumes:
-      # needed to access all docker logs 
-      - "/var/lib/docker/containers:/var/lib/docker/containers"
-      # needed to access additional information about containers
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - sbrest_data:/logs
+      # # needed to access all docker logs 
+      # - "/var/lib/docker/containers:/var/lib/docker/containers"
+      # # needed to access additional information about containers
+      # - "/var/run/docker.sock:/var/run/docker.sock"
     restart: always
     depends_on:
       - elasticsearch
-  
 
   sbrest:
     hostname: sbrest
@@ -82,15 +81,15 @@ services:
       context: java-sbrest
     restart: always
     labels:
-      filebeat_enable:
+      filebeat_enable: sbrest
     volumes:
-      - $PWD/java-sbrest/logs:/logs
+      - sbrest_data:/logs
     ports:
       - "8081:8080"
     depends_on:
       - elasticsearch    
 
-
 volumes:
   elasticsearch_data:
   filebeat_data:
+  sbrest_data:  
