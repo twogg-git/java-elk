@@ -180,7 +180,7 @@ curl http://localhost:8081/api/user/
 curl http://localhost:8081/api/user/2  
 curl http://localhost:8081/api/user/a  
 curl http://localhost:8081/api/user/99  
-curl http://localhost:8081/api/dummy 
+curl http://localhost:8081/api/info 
 curl http://localhost:8081/api/debug 
 
 # This example will output a full java exception
